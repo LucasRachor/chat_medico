@@ -2,6 +2,7 @@ import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 import { CreateMedicoDto } from './dto/create-medico.dto';
 import { UpdateMedicoDto } from './dto/update-medico.dto';
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class MedicosService {
@@ -60,7 +61,8 @@ export class MedicosService {
 
       await this.prisma.medico.create({
         data: {
-          ...createMedicoDto
+          ...createMedicoDto,
+          password: await bcrypt.hash(createMedicoDto.password, 10)
         }
       })
 

@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt'
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
 
 
@@ -98,6 +99,7 @@ export class PacientesService {
       await this.prisma.paciente.create({
         data: {
           ...createPacienteDto,
+          password: await bcrypt.hash(createPacienteDto.password, 10),
           endereco: {
             create: {
               bairro: createPacienteDto.endereco.bairro,
