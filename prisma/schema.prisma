@@ -62,7 +62,7 @@ model Endereco {
   bairro     String
   cidade     String
   cep        String
-  paciente   Paciente @relation(fields: [pacienteId], references: [id])
+  paciente   Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
   pacienteId String   @unique
 
   @@map("enderecos")

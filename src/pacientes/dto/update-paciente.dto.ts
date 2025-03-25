@@ -1,4 +1,24 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePacienteDto } from './create-paciente.dto';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsString } from 'class-validator';
 
-export class UpdatePacienteDto extends PartialType(CreatePacienteDto) {}
+export class UpdatePacienteDto {
+    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsString()
+    telefone?: string
+
+    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsEmail()
+    email?: string
+
+    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsString()
+    grau_de_instrucao?: string
+
+    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsString()
+    username?: string
+}
