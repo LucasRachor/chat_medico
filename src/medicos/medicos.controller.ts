@@ -7,14 +7,14 @@ import { UpdateMedicoDto } from './dto/update-medico.dto';
 export class MedicosController {
   constructor(private readonly medicosService: MedicosService) { }
 
-  @Post()
-  create(@Body() createMedicoDto: CreateMedicoDto) {
-    return this.medicosService.create(createMedicoDto);
-  }
-
   @Get()
   getMedicos() {
     return this.medicosService.getMedicos();
+  }
+
+  @Post()
+  create(@Body() createMedicoDto: CreateMedicoDto) {
+    return this.medicosService.create(createMedicoDto);
   }
 
   @Patch(':id')

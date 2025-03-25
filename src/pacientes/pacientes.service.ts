@@ -182,10 +182,6 @@ export class PacientesService {
         throw new HttpException("Paciente não encontrado", HttpStatus.NOT_FOUND);
       }
 
-      if (!pacienteId) {
-        throw new HttpException("Paciente não encontrado", HttpStatus.BAD_REQUEST)
-      }
-
       await this.prisma.paciente.delete({
         where: {
           id: pacienteId

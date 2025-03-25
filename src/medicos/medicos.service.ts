@@ -84,10 +84,6 @@ export class MedicosService {
     });
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} medico`;
-  }
-
   async update(medicoId: string, updateMedicoDto: UpdateMedicoDto) {
     try {
       const duplicados = {};
@@ -144,7 +140,7 @@ export class MedicosService {
       })
 
       if (!medicoExiste) {
-        throw new HttpException("Médico não encontrado", HttpStatus.BAD_REQUEST)
+        throw new HttpException("Médico não encontrado", HttpStatus.NOT_FOUND)
       }
 
       await this.prisma.medico.delete({
