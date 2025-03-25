@@ -9,3 +9,67 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model Medico {
+  id            String   @id @default(cuid())
+  criadoEm      DateTime @default(now())
+  username      String   @unique
+  password      String
+  nome_completo String
+  CRM           String   @unique
+  email         String   @unique
+  role          Role     @default(medico)
+
+  @@map("medicos")
+}
+
+model Enfermeiro {
+  id            String   @id @default(cuid())
+  criadoEm      DateTime @default(now())
+  username      String   @unique
+  password      String
+  nome_completo String
+  coren         String   @unique
+  email         String   @unique
+  role          Role     @default(enfermeiro)
+
+  @@map("enfermeiros")
+}
+
+model Paciente {
+  id                String     @id @default(cuid())
+  criadoEm          DateTime   @default(now())
+  cpf               String     @unique
+  username          String     @unique
+  password          String
+  nome_completo     String
+  telefone          String     @unique
+  email             String     @unique
+  genero            String
+  grau_de_instrucao String
+  data_nascimento   DateTime
+  idade             Int
+  role              Role       @default(paciente)
+  endereco          Endereco[]
+
+  @@map("pacientes")
+}
+
+model Endereco {
+  id         String   @id @default(cuid())
+  rua        String
+  numero     String
+  bairro     String
+  cidade     String
+  cep        String
+  paciente   Paciente @relation(fields: [pacienteId], references: [id])
+  pacienteId String   @unique
+
+  @@map("enderecos")
+}
+
+enum Role {
+  medico
+  enfermeiro
+  paciente
+}
