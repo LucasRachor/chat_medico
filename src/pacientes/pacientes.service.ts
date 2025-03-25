@@ -33,6 +33,11 @@ export class PacientesService {
 
   async create(createPacienteDto: CreatePacienteDto) {
     try {
+
+      if (!createPacienteDto) {
+        throw new HttpException("Preencha os campos necessários!", HttpStatus.BAD_REQUEST)
+      }
+
       const duplicados = {};
 
       const cpfExist = await this.findByCpf(createPacienteDto.cpf)
@@ -81,7 +86,7 @@ export class PacientesService {
               cep: createPacienteDto.endereco.cep,
               cidade: createPacienteDto.endereco.cidade,
               numero: createPacienteDto.endereco.numero,
-              rua: createPacienteDto.endereco.rua
+              rua: createPacienteDto.endereco.rua,
             }
           }
         }

@@ -3,11 +3,11 @@ import { PacientesService } from './pacientes.service';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
 
-@Controller('pacientes')
+@Controller('/api/v1/pacientes')
 export class PacientesController {
   constructor(private readonly pacientesService: PacientesService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createPacienteDto: CreatePacienteDto) {
     return this.pacientesService.create(createPacienteDto);
   }

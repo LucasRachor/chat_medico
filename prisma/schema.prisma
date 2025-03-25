@@ -58,7 +58,7 @@ model Paciente {
 model Endereco {
   id         String   @id @default(cuid())
   rua        String
-  numero     String
+  numero     Int
   bairro     String
   cidade     String
   cep        String
