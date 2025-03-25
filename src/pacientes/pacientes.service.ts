@@ -3,23 +3,15 @@ import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt'
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
+import { UserService } from 'src/user/user.service';
 
 
 @Injectable()
 export class PacientesService {
-  constructor(private readonly prisma: PrismaClient) { }
-
-  async findByUsername(username: string) {
-    return await this.prisma.paciente.findUnique({
-      where: { username: username }
-    })
-  }
-
-  async findByEmail(email: string) {
-    return await this.prisma.paciente.findUnique({
-      where: { email: email }
-    })
-  }
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly userService: UserService
+  ) { }
 
   async findByPhone(phone: string) {
     return await this.prisma.paciente.findUnique({
@@ -74,12 +66,12 @@ export class PacientesService {
         duplicados["cpf"] = "CPF já cadastrado";
       }
 
-      const usernameExist = await this.findByUsername(createPacienteDto.username);
+      const usernameExist = await this.userService.findUserByUsername(createPacienteDto.username);
       if (usernameExist) {
         duplicados["username"] = "Username já cadastrado";
       }
 
-      const emailExist = await this.findByEmail(createPacienteDto.email);
+      const emailExist = await this.userService.findEmail(createPacienteDto.email);
       if (emailExist) {
         duplicados["email"] = "Email já cadastrado";
       }
@@ -137,14 +129,14 @@ export class PacientesService {
     }
 
     if (updatePacienteDto.username && updatePacienteDto.username !== pacienteAtual.username) {
-      const usernameExist = await this.findByUsername(updatePacienteDto.username);
+      const usernameExist = await this.userService.findUserByUsername(updatePacienteDto.username);
       if (usernameExist) {
         duplicados["username"] = "Username já cadastrado";
       }
     }
 
     if (updatePacienteDto.email && updatePacienteDto.email !== pacienteAtual.email) {
-      const emailExist = await this.findByEmail(updatePacienteDto.email);
+      const emailExist = await this.userService.findEmail(updatePacienteDto.email);
       if (emailExist) {
         duplicados["email"] = "Email já cadastrado";
       }
