@@ -32,6 +32,31 @@ export class PacientesService {
     })
   }
 
+  async getPaciente() {
+    return await this.prisma.paciente.findMany({
+      select: {
+        nome_completo: true,
+        cpf: true,
+        email: true,
+        data_nascimento: true,
+        grau_de_instrucao: true,
+        username: true,
+        idade: true,
+        genero: true,
+        telefone: true,
+        endereco: {
+          select: {
+            rua: true,
+            numero: true,
+            bairro: true,
+            cidade: true,
+            cep: true
+          }
+        }
+      },
+    })
+  }
+
   //criar os pacientes
   async createPaciente(createPacienteDto: CreatePacienteDto) {
     try {
@@ -72,23 +97,14 @@ export class PacientesService {
 
       await this.prisma.paciente.create({
         data: {
-          cpf: createPacienteDto.cpf,
-          username: createPacienteDto.username,
-          password: createPacienteDto.password,
-          email: createPacienteDto.email,
-          nome_completo: createPacienteDto.nome_completo,
-          data_nascimento: createPacienteDto.data_nascimento,
-          genero: createPacienteDto.genero,
-          grau_de_instrucao: createPacienteDto.grau_de_instrucao,
-          idade: createPacienteDto.idade,
-          telefone: createPacienteDto.telefone,
+          ...createPacienteDto,
           endereco: {
             create: {
               bairro: createPacienteDto.endereco.bairro,
               cep: createPacienteDto.endereco.cep,
               cidade: createPacienteDto.endereco.cidade,
               numero: createPacienteDto.endereco.numero,
-              rua: createPacienteDto.endereco.rua,
+              rua: createPacienteDto.endereco.rua
             }
           }
         }

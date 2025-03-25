@@ -7,19 +7,24 @@ import { UpdatePacienteDto } from './dto/update-paciente.dto';
 export class PacientesController {
   constructor(private readonly pacientesService: PacientesService) { }
 
+  @Get()
+  async getCurrentPaciente() {
+    return await this.pacientesService.getPaciente()
+  }
+
   @Post('create')
-  createPaciente(@Body() createPacienteDto: CreatePacienteDto) {
-    return this.pacientesService.createPaciente(createPacienteDto);
+  async createPaciente(@Body() createPacienteDto: CreatePacienteDto) {
+    return await this.pacientesService.createPaciente(createPacienteDto);
   }
 
   @Patch(':id')
-  updatePaciente(@Param('id') id: string, @Body() updatePacienteDto: UpdatePacienteDto) {
-    return this.pacientesService.updatePaciente(id, updatePacienteDto)
+  async updatePaciente(@Param('id') id: string, @Body() updatePacienteDto: UpdatePacienteDto) {
+    return await this.pacientesService.updatePaciente(id, updatePacienteDto)
   }
 
   @Delete(':id')
-  deletePaciente(@Param('id') id: string) {
-    return this.pacientesService.deletePaciente(id)
+  async deletePaciente(@Param('id') id: string) {
+    return await this.pacientesService.deletePaciente(id)
   }
 
 }
