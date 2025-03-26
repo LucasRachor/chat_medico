@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
     const user = request.user;
 
     if (!user || user.role !== requiredRole) {
-      throw new ForbiddenException('Acesso negado! Apenas admins podem acessar esta rota.');
+      throw new ForbiddenException('Acesso negado!');
     }
 
     return true;
