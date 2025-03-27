@@ -5,7 +5,7 @@ import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 import { RolesGuard } from 'src/auth/guards/Roles.guard';
 
-@Controller('/api/v1/pacientes')
+@Controller('pacientes')
 export class PacientesController {
   constructor(private readonly pacientesService: PacientesService) { }
 
@@ -17,7 +17,7 @@ export class PacientesController {
   }
 
   @IsPublic()
-  @Post('create')
+  @Post()
   async createPaciente(@Body() createPacienteDto: CreatePacienteDto) {
     return await this.pacientesService.createPaciente(createPacienteDto);
   }

@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
+import { Role } from "@prisma/client"
 import { IsString } from "class-validator"
 
 export class CreateMedicoDto {
@@ -22,6 +23,5 @@ export class CreateMedicoDto {
     @IsString()
     @ApiProperty({example: "lukinhas@corp.com"})
     email: string
-
 
 }

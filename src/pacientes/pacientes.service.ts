@@ -60,24 +60,24 @@ export class PacientesService {
 
       const duplicados = {};
 
-      const cpfExist = await this.findByCpf(createPacienteDto.cpf)
+      const cpfExiste = await this.findByCpf(createPacienteDto.cpf)
 
-      if (cpfExist) {
+      if (cpfExiste) {
         duplicados["cpf"] = "CPF já cadastrado";
       }
 
-      const usernameExist = await this.userService.findUserByUsername(createPacienteDto.username);
-      if (usernameExist) {
+      const usernameExiste = await this.userService.findUserByUsername(createPacienteDto.username);
+      if (usernameExiste) {
         duplicados["username"] = "Username já cadastrado";
       }
 
-      const emailExist = await this.userService.findEmail(createPacienteDto.email);
-      if (emailExist) {
+      const emailExiste = await this.userService.findEmail(createPacienteDto.email);
+      if (emailExiste) {
         duplicados["email"] = "Email já cadastrado";
       }
 
-      const phoneExist = await this.findByPhone(createPacienteDto.telefone);
-      if (phoneExist) {
+      const phoneExiste = await this.findByPhone(createPacienteDto.telefone);
+      if (phoneExiste) {
         duplicados["telefone"] = "Telefone já cadastrado";
       }
 
@@ -129,22 +129,22 @@ export class PacientesService {
     }
 
     if (updatePacienteDto.username && updatePacienteDto.username !== pacienteAtual.username) {
-      const usernameExist = await this.userService.findUserByUsername(updatePacienteDto.username);
-      if (usernameExist) {
+      const usernameExiste = await this.userService.findUserByUsername(updatePacienteDto.username);
+      if (usernameExiste) {
         duplicados["username"] = "Username já cadastrado";
       }
     }
 
     if (updatePacienteDto.email && updatePacienteDto.email !== pacienteAtual.email) {
-      const emailExist = await this.userService.findEmail(updatePacienteDto.email);
-      if (emailExist) {
+      const emailExiste = await this.userService.findEmail(updatePacienteDto.email);
+      if (emailExiste) {
         duplicados["email"] = "Email já cadastrado";
       }
     }
 
     if (updatePacienteDto.telefone && updatePacienteDto.telefone !== pacienteAtual.telefone) {
-      const phoneExist = await this.findByPhone(updatePacienteDto.telefone);
-      if (phoneExist) {
+      const phoneExiste = await this.findByPhone(updatePacienteDto.telefone);
+      if (phoneExiste) {
         duplicados["telefone"] = "Telefone já cadastrado";
       }
     }

@@ -10,30 +10,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Medico {
+model EquipeMedica {
   id            String   @id @default(cuid())
   criadoEm      DateTime @default(now())
   username      String   @unique
   password      String
   nome_completo String
-  CRM           String   @unique
+  CRM           String?  @unique
+  coren         String?  @unique
   email         String   @unique
-  role          Role     @default(medico)
+  role          Role
 
-  @@map("medicos")
-}
-
-model Enfermeiro {
-  id            String   @id @default(cuid())
-  criadoEm      DateTime @default(now())
-  username      String   @unique
-  password      String
-  nome_completo String
-  coren         String   @unique
-  email         String   @unique
-  role          Role     @default(enfermeiro)
-
-  @@map("enfermeiros")
+  @@map("equipe_medica")
 }
 
 model Paciente {

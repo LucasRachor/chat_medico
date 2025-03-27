@@ -9,11 +9,8 @@ export class UserService {
     const paciente = await this.prisma.paciente.findUnique({ where: { username } });
     if (paciente) return { ...paciente, userType: 'paciente' };
 
-    const medico = await this.prisma.medico.findUnique({ where: { username } });
-    if (medico) return { ...medico, userType: 'medico' };
-
-    const enfermeiro = await this.prisma.enfermeiro.findUnique({ where: { username } });
-    if (enfermeiro) return { ...enfermeiro, userType: 'enfermeiro' };
+    const medico = await this.prisma.equipeMedica.findUnique({ where: { username } });
+    if (medico) return { ...medico, userType: medico.role };
 
     return null;
   }
@@ -22,11 +19,8 @@ export class UserService {
     const paciente = await this.prisma.paciente.findUnique({ where: { email } })
     if (paciente) return true;
 
-    const medico = await this.prisma.medico.findUnique({ where: { email } })
+    const medico = await this.prisma.equipeMedica.findUnique({ where: { email } })
     if (medico) return true;
-
-    const enfermeiro = await this.prisma.enfermeiro.findUnique({ where: { email } })
-    if (enfermeiro) return true;
 
     return null;
 

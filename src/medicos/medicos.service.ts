@@ -4,6 +4,7 @@ import { UpdateMedicoDto } from './dto/update-medico.dto';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt'
 import { UserService } from 'src/user/user.service';
+import { CreateEnfermeiroDto } from './dto/create-enfermeiro.dto';
 
 @Injectable()
 export class MedicosService {
@@ -13,12 +14,57 @@ export class MedicosService {
   ) { }
 
   async findByCrm(crm: string) {
-    return await this.prisma.medico.findUnique({
+    return await this.prisma.equipeMedica.findUnique({
       where: { CRM: crm }
     })
   }
 
-  async create(createMedicoDto: CreateMedicoDto) {
+  async createEnfermeiro(createEnfermeiroDto: CreateEnfermeiroDto) {
+    try {
+      if (!createEnfermeiroDto) {
+        throw new HttpException("Preencha os campos necessários!", HttpStatus.BAD_REQUEST)
+      }
+
+      const duplicados = {};
+
+      const corenExiste = await this.findByCrm(createEnfermeiroDto.coren)
+      if (corenExiste) {
+        duplicados["coren"] = "Coren já cadastrado";
+      }
+
+      const usernameExiste = await this.userService.findUserByUsername(createEnfermeiroDto.username);
+      if (usernameExiste) {
+        duplicados["username"] = "Username já cadastrado";
+      }
+
+      const emailExiste = await this.userService.findEmail(createEnfermeiroDto.email);
+      if (emailExiste) {
+        duplicados["email"] = "Email já cadastrado";
+      }
+
+      if (Object.keys(duplicados).length > 0) {
+        throw new HttpException(
+          { error: duplicados },
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      await this.prisma.equipeMedica.create({
+        data: {
+          ...createEnfermeiroDto,
+          password: await bcrypt.hash(createEnfermeiroDto.password, 10),
+          role: "enfermeiro"
+        }
+      })
+
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+    }
+  }
+
+  async createMedico(createMedicoDto: CreateMedicoDto) {
     try {
 
       if (!createMedicoDto) {
@@ -50,10 +96,11 @@ export class MedicosService {
         );
       }
 
-      await this.prisma.medico.create({
+      await this.prisma.equipeMedica.create({
         data: {
           ...createMedicoDto,
-          password: await bcrypt.hash(createMedicoDto.password, 10)
+          password: await bcrypt.hash(createMedicoDto.password, 10),
+          role: "medico"
         }
       })
 
@@ -67,7 +114,10 @@ export class MedicosService {
   }
 
   async getMedicos() {
-    return await this.prisma.medico.findMany({
+    return await this.prisma.equipeMedica.findMany({
+      where: {
+        role: 'medico'
+      },
       select: {
         nome_completo: true,
         email: true,
@@ -77,11 +127,25 @@ export class MedicosService {
     });
   }
 
+  async getEnfermeiros() {
+    return await this.prisma.equipeMedica.findMany({
+      where: {
+        role: 'enfermeiro'
+      },
+      select: {
+        nome_completo: true,
+        email: true,
+        username: true,
+        coren: true
+      }
+    });
+  }
+
   async update(medicoId: string, updateMedicoDto: UpdateMedicoDto) {
     try {
       const duplicados = {};
 
-      const medicoAtual = await this.prisma.medico.findUnique({
+      const medicoAtual = await this.prisma.equipeMedica.findUnique({
         where: { id: medicoId },
       });
 
@@ -110,7 +174,7 @@ export class MedicosService {
         );
       }
 
-      await this.prisma.medico.update({
+      await this.prisma.equipeMedica.update({
         where: { id: medicoId },
         data: { ...updateMedicoDto },
       });
@@ -126,7 +190,7 @@ export class MedicosService {
 
   async removerMedico(medicoId: string) {
     try {
-      const medicoExiste = await this.prisma.medico.findUnique({
+      const medicoExiste = await this.prisma.equipeMedica.findUnique({
         where: {
           id: medicoId
         }
@@ -136,7 +200,7 @@ export class MedicosService {
         throw new HttpException("Médico não encontrado", HttpStatus.NOT_FOUND)
       }
 
-      await this.prisma.medico.delete({
+      await this.prisma.equipeMedica.delete({
         where: {
           id: medicoId
         }
