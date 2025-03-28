@@ -35,8 +35,14 @@ export class QuestionarioService {
     return undefined;
   }
 
-  async findAll() {
+  async findAll(userId: string) {
     return await this.prisma.questionario.findMany({
+      where: {
+        equipeMedica: {
+          id: userId
+        }
+
+      },
       select: {
         criadoEm: true,
         pergunta: true,
@@ -52,20 +58,17 @@ export class QuestionarioService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} questionario`;
-  }
-
-  update(id: number, updateQuestionarioDto: UpdateQuestionarioDto) {
-    return `This action updates a #${id} questionario`;
-  }
-
-  async removeQuestionario(questionarioId: string) {
+  async removeQuestionario(questionarioId: string, userId: string) {
     const questionarioExiste = await this.prisma.questionario.findUnique({
       where: {
         id: questionarioId
       }
     })
+
+    if (questionarioExiste?.equipeMedicaId !== userId) {
+      throw new HttpException("Você não tem permissão para deletar este questionário", HttpStatus.FORBIDDEN);
+    }
+
     if (!questionarioExiste) {
       throw new HttpException("Questionário não encontrado", HttpStatus.NOT_FOUND);
     }

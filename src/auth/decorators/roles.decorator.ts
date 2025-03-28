@@ -1,3 +1,3 @@
 import { SetMetadata } from '@nestjs/common';
 
-export const Roles = (role: 'ADMIN' | 'USER') => SetMetadata('role', role);
+export const Roles = (role: 'enfermeiro' | 'medico' | 'paciente') => SetMetadata('role', role);

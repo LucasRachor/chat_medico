@@ -3,6 +3,7 @@ import { QuestionarioService } from './questionario.service';
 import { CreateQuestionarioDto } from './dto/create-questionario.dto';
 import { UpdateQuestionarioDto } from './dto/update-questionario.dto';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @Controller('questionario')
 export class QuestionarioController {
@@ -10,29 +11,19 @@ export class QuestionarioController {
 
   @IsPublic()
   @Post()
-  create(@Body() createQuestionarioDto: CreateQuestionarioDto, equipeMedicaId: string) {
-    return this.questionarioService.create(createQuestionarioDto, equipeMedicaId);
+  create(@CurrentUser('id') userId: string, @Body() createQuestionarioDto: CreateQuestionarioDto) {
+    return this.questionarioService.create(createQuestionarioDto, userId);
   }
 
   @IsPublic()
   @Get()
-  findAll() {
-    return this.questionarioService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.questionarioService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuestionarioDto: UpdateQuestionarioDto) {
-    return this.questionarioService.update(+id, updateQuestionarioDto);
+  findAll(@CurrentUser('id') userId: string) {
+    return this.questionarioService.findAll(userId);
   }
 
   @IsPublic()
   @Delete(':id')
-  removeQuestionario(@Param('id') id: string) {
-    return this.questionarioService.removeQuestionario(id);
+  removeQuestionario(@CurrentUser('id') userId: string,@Param('id') questionarioId: string) {
+    return this.questionarioService.removeQuestionario(questionarioId, userId);
   }
 }

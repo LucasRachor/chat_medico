@@ -1,13 +1,14 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { AuthRequest } from '../models/AuthRequest';
-import { UserFromJwt } from '../models/UserFromJwt';
-
-
 
 export const CurrentUser = createParamDecorator(
-  (data: unknown, context: ExecutionContext): UserFromJwt => {
-    const request = context.switchToHttp().getRequest<AuthRequest>();
+  (data: string, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    const user = request.user;
 
-    return request.user;
+    if (!user) {
+      return null;
+    }
+
+    return data ? user[data] : user;
   },
-);
+); 
