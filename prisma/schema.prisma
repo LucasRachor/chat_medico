@@ -11,35 +11,39 @@ datasource db {
 }
 
 model EquipeMedica {
-  id            String         @id @default(cuid())
-  criadoEm      DateTime       @default(now())
-  username      String         @unique
-  password      String
-  nome_completo String
-  CRM           String?        @unique
-  coren         String?        @unique
-  email         String         @unique
-  role          Role
-  questionario  Questionario[]
+  id              String            @id @default(cuid())
+  criadoEm        DateTime          @default(now())
+  username        String            @unique
+  password        String
+  nome_completo   String
+  CRM             String?           @unique
+  coren           String?           @unique
+  email           String            @unique
+  role            Role
+  questionario    Questionario[]
+  chat            Chat[]
+  filaAtendimento FilaAtendimento[]
 
   @@map("equipe_medica")
 }
 
 model Paciente {
-  id                String     @id @default(cuid())
-  criadoEm          DateTime   @default(now())
-  cpf               String     @unique
-  username          String     @unique
+  id                String            @id @default(cuid())
+  criadoEm          DateTime          @default(now())
+  cpf               String            @unique
+  username          String            @unique
   password          String
   nome_completo     String
-  telefone          String     @unique
-  email             String     @unique
+  telefone          String            @unique
+  email             String            @unique
   genero            String
   grau_de_instrucao String
   data_nascimento   DateTime
   idade             Int
-  role              Role       @default(paciente)
+  role              Role              @default(paciente)
   endereco          Endereco[]
+  chat              Chat[]
+  filaAtendimento   FilaAtendimento[]
 
   @@map("pacientes")
 }
@@ -78,6 +82,30 @@ model Alternativa {
   questionarioId String
 
   @@map("alternativas")
+}
+
+model Chat {
+  id         String       @id @default(uuid())
+  mensagem   String
+  lida       Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  medico     EquipeMedica @relation(fields: [medicoId], references: [id])
+  medicoId   String
+  paciente   Paciente     @relation(fields: [pacienteId], references: [id])
+  pacienteId String
+}
+
+model FilaAtendimento {
+  id                    String        @id @default(uuid())
+  status                String        @default("aguardando")
+  respostasQuestionario Json?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  paciente              Paciente      @relation(fields: [pacienteId], references: [id])
+  pacienteId            String
+  medico                EquipeMedica? @relation(fields: [medicoId], references: [id])
+  medicoId              String?
 }
 
 enum Role {

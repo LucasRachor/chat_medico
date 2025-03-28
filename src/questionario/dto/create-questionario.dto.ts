@@ -34,4 +34,5 @@ export class CreateQuestionarioDto {
     @IsArray()
     @IsNotEmpty()
     alternativas: Alternativa[]
+
 }
