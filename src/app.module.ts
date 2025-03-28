@@ -8,17 +8,9 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { PrismaClient } from '@prisma/client';
 import { QuestionarioModule } from './questionario/questionario.module';
-import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [
-    PacientesModule,
-    MedicosModule,
-    UserModule,
-    AuthModule,
-    QuestionarioModule,
-    ChatModule,
-  ],
+  imports: [PacientesModule, MedicosModule, UserModule, AuthModule, QuestionarioModule],
   controllers: [],
   providers: [{
     provide: APP_GUARD,
