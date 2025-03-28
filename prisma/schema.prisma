@@ -11,15 +11,16 @@ datasource db {
 }
 
 model EquipeMedica {
-  id            String   @id @default(cuid())
-  criadoEm      DateTime @default(now())
-  username      String   @unique
+  id            String         @id @default(cuid())
+  criadoEm      DateTime       @default(now())
+  username      String         @unique
   password      String
   nome_completo String
-  CRM           String?  @unique
-  coren         String?  @unique
-  email         String   @unique
+  CRM           String?        @unique
+  coren         String?        @unique
+  email         String         @unique
   role          Role
+  questionario  Questionario[]
 
   @@map("equipe_medica")
 }
@@ -54,6 +55,29 @@ model Endereco {
   pacienteId String   @unique
 
   @@map("enderecos")
+}
+
+model Questionario {
+  id             String        @id @default(cuid())
+  criadoEm       DateTime      @default(now())
+  pergunta       String
+  observacao     String
+  peso           Int
+  alternativas   Alternativa[]
+  equipeMedica   EquipeMedica  @relation(references: [id], fields: [equipeMedicaId], onDelete: Cascade)
+  equipeMedicaId String
+
+  @@map("questionarios")
+}
+
+model Alternativa {
+  id             String       @id @default(cuid())
+  alternativa    String
+  peso           Int
+  questionario   Questionario @relation(fields: [questionarioId], references: [id], onDelete: Cascade)
+  questionarioId String
+
+  @@map("alternativas")
 }
 
 enum Role {

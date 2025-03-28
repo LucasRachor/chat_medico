@@ -7,9 +7,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { PrismaClient } from '@prisma/client';
+import { QuestionarioModule } from './questionario/questionario.module';
 
 @Module({
-  imports: [PacientesModule, MedicosModule, UserModule, AuthModule],
+  imports: [PacientesModule, MedicosModule, UserModule, AuthModule, QuestionarioModule],
   controllers: [],
   providers: [{
     provide: APP_GUARD,
