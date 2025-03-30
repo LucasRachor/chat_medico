@@ -26,19 +26,19 @@ model EquipeMedica {
 }
 
 model Paciente {
-  id                String     @id @default(cuid())
-  criadoEm          DateTime   @default(now())
-  cpf               String     @unique
-  username          String     @unique
+  id                String           @id @default(cuid())
+  criadoEm          DateTime         @default(now())
+  cpf               String           @unique
+  username          String           @unique
   password          String
   nome_completo     String
-  telefone          String     @unique
-  email             String     @unique
+  telefone          String           @unique
+  email             String           @unique
   genero            String
   grau_de_instrucao String
   data_nascimento   DateTime
   idade             Int
-  role              Role       @default(paciente)
+  role              Role             @default(paciente)
   endereco          Endereco[]
 
   @@map("pacientes")
