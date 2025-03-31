@@ -27,16 +27,38 @@ export class QuestionarioService {
         }
       })
     } catch (error) {
-      console.log(error)
       if (error instanceof HttpException) {
         throw error;
       }
+      console.log(error)
       throw new HttpException("Erro interno do servidor", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return undefined;
   }
 
-  async findAll(userId: string) {
+  async findAll() {
+    return await this.prisma.questionario.findMany({
+      select: {
+        criadoEm: true,
+        pergunta: true,
+        observacao: true,
+        peso: true,
+        alternativas: {
+          select: {
+            alternativa: true,
+            peso: true
+          }
+        }
+      }
+    });
+  }
+
+  async findQuestionsByUser(userId: string) {
+
+    if (!userId) {
+      throw new HttpException("Usuário não encontrado", HttpStatus.NOT_FOUND);
+    }
+
     return await this.prisma.questionario.findMany({
       where: {
         equipeMedica: {

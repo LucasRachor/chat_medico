@@ -25,14 +25,12 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  // Endpoint para verificar se o token é válido
   @UseGuards(JwtAuthGuard)
   @Get('verify')
   verifyToken(@Request() req) {
-    // Se o token for válido, a requisição passará por aqui
     return {
       message: 'Token is valid',
-      user: req.user, // O usuário decodificado do token será incluído aqui
+      user: req.user,
     };
   }
 }

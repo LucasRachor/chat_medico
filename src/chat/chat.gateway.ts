@@ -21,6 +21,19 @@ export class ChatGateway {
   private activeChats = new Map<string, string>();
   private patientSockets = new Map<string, string>();
 
+  @SubscribeMessage('getQueue')
+  handleGetQueue(
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n📋 [Médico] Solicitou a lista de pacientes na fila`);
+    console.log(`📌 [Fila Atual]`, JSON.stringify(this.queue, null, 2));
+    
+    client.emit('queueList', {
+      queue: this.queue,
+      timestamp: new Date().toISOString()
+    });
+  }
+
   @SubscribeMessage('enterQueue')
   handleEnterQueue(
     @MessageBody() patient: { pacienteId: string; name: string },
@@ -35,10 +48,7 @@ export class ChatGateway {
       console.log(`⚠️ [Erro] Paciente ${patient.pacienteId} já está na fila.`);
       return client.emit('error', { message: 'Paciente já está na fila.' });
     }
-
     this.queue.push(patient);
-    console.log(`📌 [Fila Atualizada]`, JSON.stringify(this.queue, null, 2));
-
     this.server.emit('updateQueue', this.queue);
   }
 
@@ -96,4 +106,27 @@ export class ChatGateway {
     client.to(mensagem.sala).emit('receiveMessage', mensagem);
   }
 
+  @SubscribeMessage('endChat')
+  handleEndChat(
+    @MessageBody() data: { sala: string; pacienteId: string; medicoId: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n🔴 [Chat Encerrado] Sala: ${data.sala}`);
+
+    // Remove o chat da lista de chats ativos
+    this.activeChats.delete(data.pacienteId);
+    
+    // Remove os participantes da sala
+    client.leave(data.sala);
+    
+    // Notifica todos os participantes que o chat foi encerrado
+    this.server.to(data.sala).emit('chatEnded', {
+      sala: data.sala,
+      pacienteId: data.pacienteId,
+      medicoId: data.medicoId,
+      timestamp: new Date().toISOString()
+    });
+
+    console.log(`✅ [Chat Finalizado] Sala ${data.sala} encerrada com sucesso.`);
+  }
 }
