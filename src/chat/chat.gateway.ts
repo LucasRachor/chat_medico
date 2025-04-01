@@ -27,11 +27,20 @@ export class ChatGateway {
   ) {
     console.log(`\n📋 [Médico] Solicitou a lista de pacientes na fila`);
     console.log(`📌 [Fila Atual]`, JSON.stringify(this.queue, null, 2));
-    
+
     client.emit('queueList', {
       queue: this.queue,
       timestamp: new Date().toISOString()
     });
+  }
+
+  @SubscribeMessage('joinRoom')
+  handleJoinRoom(
+    @MessageBody() data: { sala: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n🔵 [Entrou na Sala] Socket ${client.id} entrou na sala ${data.sala}`);
+    client.join(data.sala);
   }
 
   @SubscribeMessage('enterQueue')
@@ -51,8 +60,7 @@ export class ChatGateway {
     this.queue.push(patient);
     this.server.emit('updateQueue', this.queue);
   }
-
-
+  
   // medico aceita um paciente
   @SubscribeMessage('acceptPatient')
   handleAcceptPatient(
@@ -83,7 +91,8 @@ export class ChatGateway {
       const patientSocket = this.server.sockets.sockets.get(patientSocketId);
       if (patientSocket) {
         patientSocket.join(sala);
-        this.server.to(sala).emit('chatStarted', { sala, pacienteId: data.pacienteId, medicoId: data.medicoId });
+        // Emite o evento acceptPatient para o paciente
+        patientSocket.emit('acceptPatient', { medicoId: data.medicoId });
       }
     } else {
       console.log(`❌ [Erro] Não foi possível encontrar o socket do paciente ${data.pacienteId}`);
@@ -103,7 +112,11 @@ export class ChatGateway {
       return client.emit('error', { mensagem: 'Dados da mensagem são inválidos.' });
     }
 
-    client.to(mensagem.sala).emit('receiveMessage', mensagem);
+    // Alterado para emitir o evento 'message' em vez de 'receiveMessage'
+    this.server.to(mensagem.sala).emit('message', {
+      remetenteId: mensagem.remetenteId,
+      mensagem: mensagem.mensagem
+    });
   }
 
   @SubscribeMessage('endChat')
@@ -115,10 +128,10 @@ export class ChatGateway {
 
     // Remove o chat da lista de chats ativos
     this.activeChats.delete(data.pacienteId);
-    
+
     // Remove os participantes da sala
     client.leave(data.sala);
-    
+
     // Notifica todos os participantes que o chat foi encerrado
     this.server.to(data.sala).emit('chatEnded', {
       sala: data.sala,
