@@ -6,6 +6,7 @@ type AuthenticatedUser = {
     username: string;
     role: string;
     userType: 'paciente' | 'medico' | 'enfermeiro';
+    nome_completo: string;
 };
 
 export class AuthRequest extends Request {

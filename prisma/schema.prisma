@@ -80,6 +80,17 @@ model Alternativa {
   @@map("alternativas")
 }
 
+model ChatMessage {
+  id          String   @id @default(uuid())
+  sala        String
+  remetenteId String
+  mensagem    String
+  timestamp   DateTime @default(now())
+
+  @@index([sala])
+  @@map("chat_messages")
+}
+
 enum Role {
   medico
   enfermeiro

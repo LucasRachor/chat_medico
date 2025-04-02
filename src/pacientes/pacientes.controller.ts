@@ -9,17 +9,17 @@ import { RolesGuard } from 'src/auth/guards/Roles.guard';
 export class PacientesController {
   constructor(private readonly pacientesService: PacientesService) { }
 
-  @UseGuards(RolesGuard)
-  @SetMetadata('role', 'paciente')
-  @Get()
-  async getCurrentPaciente() {
-    return await this.pacientesService.getPaciente()
-  }
-
   @IsPublic()
   @Post()
   async createPaciente(@Body() createPacienteDto: CreatePacienteDto) {
     return await this.pacientesService.createPaciente(createPacienteDto);
+  }
+
+  @UseGuards(RolesGuard)
+  @SetMetadata('role', 'paciente')
+  @Get(':id')
+  async getInfoPaciente(@Param('id') pacienteId: string) {
+    return await this.pacientesService.getInfoPaciente(pacienteId)
   }
 
   @UseGuards(RolesGuard)

@@ -6,14 +6,22 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { ChatService } from './chat.service';
 
 interface PatientQueue {
   pacienteId: string;
-  name: string;
+  nome_completo: string;
+  idade: number;
+  genero: string;
 }
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({
+  cors: {
+    origin: 'http://localhost:5173',
+  }
+})
 export class ChatGateway {
+  constructor(private readonly chatService: ChatService) { }
   @WebSocketServer()
   server: Server;
 
@@ -45,10 +53,10 @@ export class ChatGateway {
 
   @SubscribeMessage('enterQueue')
   handleEnterQueue(
-    @MessageBody() patient: { pacienteId: string; name: string },
+    @MessageBody() patient: { pacienteId: string; nome_completo: string, idade: number, genero: string },
     @ConnectedSocket() client: Socket,
   ) {
-    console.log(`\n🟢 [Paciente] ${patient.name} (${patient.pacienteId}) entrou na fila.`);
+    console.log(`\n🟢 [Paciente] ${patient.nome_completo} (${patient.pacienteId}) entrou na fila.`);
 
     this.patientSockets.set(patient.pacienteId, client.id);
     console.log(`Paciente ${patient.pacienteId} registrado com socket ID: ${client.id}`);
@@ -60,7 +68,7 @@ export class ChatGateway {
     this.queue.push(patient);
     this.server.emit('updateQueue', this.queue);
   }
-  
+
   // medico aceita um paciente
   @SubscribeMessage('acceptPatient')
   handleAcceptPatient(
@@ -101,7 +109,7 @@ export class ChatGateway {
 
   // enviar mensagem no chat
   @SubscribeMessage('sendMessage')
-  handleMessage(
+  async handleMessage(
     @MessageBody() mensagem: { sala: string; remetenteId: string; mensagem: string },
     @ConnectedSocket() client: Socket,
   ) {
@@ -111,6 +119,8 @@ export class ChatGateway {
       console.log(`❌ [Erro] Mensagem inválida recebida:`, mensagem);
       return client.emit('error', { mensagem: 'Dados da mensagem são inválidos.' });
     }
+
+    await this.chatService.salvarMensagem(mensagem.sala, mensagem.remetenteId, mensagem.mensagem);
 
     // Alterado para emitir o evento 'message' em vez de 'receiveMessage'
     this.server.to(mensagem.sala).emit('message', {

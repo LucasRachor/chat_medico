@@ -13,6 +13,18 @@ export class PacientesService {
     private readonly userService: UserService
   ) { }
 
+  async getInfoPaciente(pacienteId: string) {
+    return await this.prisma.paciente.findUnique({
+      where: { id: pacienteId },
+      select: {
+        nome_completo: true,
+        data_nascimento: true,
+        idade: true,
+        genero: true,
+      }
+    })
+  }
+
   async findByPhone(phone: string) {
     return await this.prisma.paciente.findUnique({
       where: { telefone: phone }
