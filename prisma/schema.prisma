@@ -26,20 +26,21 @@ model EquipeMedica {
 }
 
 model Paciente {
-  id                String           @id @default(cuid())
-  criadoEm          DateTime         @default(now())
-  cpf               String           @unique
-  username          String           @unique
+  id                String        @id @default(cuid())
+  criadoEm          DateTime      @default(now())
+  cpf               String        @unique
+  username          String        @unique
   password          String
   nome_completo     String
-  telefone          String           @unique
-  email             String           @unique
+  telefone          String        @unique
+  email             String        @unique
   genero            String
   grau_de_instrucao String
   data_nascimento   DateTime
   idade             Int
-  role              Role             @default(paciente)
+  role              Role          @default(paciente)
   endereco          Endereco[]
+  atendimento       Atendimento[]
 
   @@map("pacientes")
 }
@@ -63,19 +64,21 @@ model Questionario {
   pergunta       String
   observacao     String
   peso           Int
-  alternativas   Alternativa[]
   equipeMedica   EquipeMedica  @relation(references: [id], fields: [equipeMedicaId], onDelete: Cascade)
   equipeMedicaId String
+  alternativas   Alternativa[]
+  atendimento    Atendimento[]
 
   @@map("questionarios")
 }
 
 model Alternativa {
-  id             String       @id @default(cuid())
+  id             String        @id @default(cuid())
   alternativa    String
   peso           Int
-  questionario   Questionario @relation(fields: [questionarioId], references: [id], onDelete: Cascade)
+  questionario   Questionario  @relation(fields: [questionarioId], references: [id], onDelete: Cascade)
   questionarioId String
+  atendimento    Atendimento[]
 
   @@map("alternativas")
 }
@@ -89,6 +92,20 @@ model ChatMessage {
 
   @@index([sala])
   @@map("chat_messages")
+}
+
+model Atendimento {
+  id              String       @id @default(cuid())
+  dataAtendimento DateTime     @default(now())
+  tipoAtendimento String
+  paciente        Paciente     @relation(fields: [pacienteId], references: [id])
+  pacienteId      String
+  Alternativa     Alternativa  @relation(fields: [alternativaId], references: [id])
+  alternativaId   String
+  questionario    Questionario @relation(fields: [questionarioId], references: [id])
+  questionarioId  String
+
+  @@map("atendimentos")
 }
 
 enum Role {
