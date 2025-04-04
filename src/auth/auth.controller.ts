@@ -28,7 +28,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('verify')
   async verifyToken(@Request() req) {
-    console.log(req.user);
     return {
       message: 'Token is valid',
       user: req.user,

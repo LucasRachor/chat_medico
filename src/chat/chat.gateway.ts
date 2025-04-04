@@ -13,6 +13,8 @@ interface PatientQueue {
   nome_completo: string;
   idade: number;
   genero: string;
+  peso: number;
+  horaChegada: string;
 }
 
 @WebSocketGateway({
@@ -53,7 +55,14 @@ export class ChatGateway {
 
   @SubscribeMessage('enterQueue')
   handleEnterQueue(
-    @MessageBody() patient: { pacienteId: string; nome_completo: string, idade: number, genero: string },
+    @MessageBody() patient: { 
+      pacienteId: string; 
+      nome_completo: string; 
+      idade: number; 
+      genero: string; 
+      pesoTotal: number;
+      horaChegada: string;
+    },
     @ConnectedSocket() client: Socket,
   ) {
     console.log(`\n🟢 [Paciente] ${patient.nome_completo} (${patient.pacienteId}) entrou na fila.`);
@@ -65,7 +74,27 @@ export class ChatGateway {
       console.log(`⚠️ [Erro] Paciente ${patient.pacienteId} já está na fila.`);
       return client.emit('error', { message: 'Paciente já está na fila.' });
     }
-    this.queue.push(patient);
+
+    const newPatient: PatientQueue = {
+      ...patient,
+      peso: patient.pesoTotal
+    };
+
+    this.queue.push(newPatient);
+    this.server.emit('updateQueue', this.queue);
+  }
+
+  @SubscribeMessage('leaveQueue')
+  handleLeaveQueue(
+    @MessageBody() data: { pacienteId: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n🔴 [Paciente] ${data.pacienteId} saiu da fila.`);
+
+    this.queue = this.queue.filter(p => p.pacienteId !== data.pacienteId);
+    this.patientSockets.delete(data.pacienteId);
+    
+    console.log(`📌 [Fila Atualizada]`, JSON.stringify(this.queue, null, 2));
     this.server.emit('updateQueue', this.queue);
   }
 
