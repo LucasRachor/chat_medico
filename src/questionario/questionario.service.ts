@@ -1,6 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateQuestionarioDto } from './dto/create-questionario.dto';
-import { UpdateQuestionarioDto } from './dto/update-questionario.dto';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
@@ -11,11 +10,12 @@ export class QuestionarioService {
       await this.prisma.questionario.create({
         data: {
           ...createQuestionarioDto,
+          peso: +createQuestionarioDto.peso,
           alternativas: {
             create: createQuestionarioDto.alternativas.map((alternativa) => {
               return {
                 alternativa: alternativa.alternativa,
-                peso: alternativa.peso,
+                peso: +alternativa.peso,
               }
             })
           },

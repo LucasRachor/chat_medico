@@ -42,20 +42,20 @@ export class CreatePacienteDto {
     @IsString()
     cpf: string;
 
-    @ApiProperty({example: "lukinhas123"})
+    @ApiProperty({example: "testePaciente"})
     @IsNotEmpty()
     @IsString()
     username: string;
 
-    @ApiProperty({example: "teste123"})
+    @ApiProperty({example: "senha123"})
     @IsNotEmpty()
     @IsString()
     password: string;
 
-    @ApiProperty({example: "Teste Silva Rachor"})
+    @ApiProperty({example: "Teste Paciente Junior"})
     @IsNotEmpty()
     @IsString()
-    nome_completo: string;
+    nomeCompleto: string;
 
     @ApiProperty({example: "(92) 00000-0000"})
     @IsNotEmpty()
@@ -75,20 +75,20 @@ export class CreatePacienteDto {
     @ApiProperty({example: "Educação Básica"})
     @IsNotEmpty()
     @IsString()
-    grau_de_instrucao: string;
+    grauDeInstrucao: string;
 
     @ApiProperty({example: "2025-03-25T14:06:03.655Z"})
     @IsNotEmpty()
     @IsDate()
-    data_nascimento: Date;
+    dataNascimento: Date;
 
     @ApiProperty({example: 32})
     @IsInt()
     @IsNotEmpty()
     idade: number;
 
-    @ApiProperty({ type: EnderecoDto }) // Agora o Swagger sabe que é um objeto Endereco
+    @ApiProperty({ type: EnderecoDto })
     @IsNotEmpty()
-    @Type(() => EnderecoDto) // Transforma corretamente o JSON recebido
+    @Type(() => EnderecoDto)
     endereco: EnderecoDto;
 }

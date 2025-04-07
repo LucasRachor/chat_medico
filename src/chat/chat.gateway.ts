@@ -6,11 +6,10 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ChatService } from './chat.service';
 
 interface PatientQueue {
   pacienteId: string;
-  nome_completo: string;
+  nomeCompleto: string;
   idade: number;
   genero: string;
   peso: number;
@@ -23,7 +22,6 @@ interface PatientQueue {
   }
 })
 export class ChatGateway {
-  constructor(private readonly chatService: ChatService) { }
   @WebSocketServer()
   server: Server;
 
@@ -55,17 +53,17 @@ export class ChatGateway {
 
   @SubscribeMessage('enterQueue')
   handleEnterQueue(
-    @MessageBody() patient: { 
-      pacienteId: string; 
-      nome_completo: string; 
-      idade: number; 
-      genero: string; 
+    @MessageBody() patient: {
+      pacienteId: string;
+      nomeCompleto: string;
+      idade: number;
+      genero: string;
       pesoTotal: number;
       horaChegada: string;
     },
     @ConnectedSocket() client: Socket,
   ) {
-    console.log(`\n🟢 [Paciente] ${patient.nome_completo} (${patient.pacienteId}) entrou na fila.`);
+    console.log(`\n🟢 [Paciente] ${patient.nomeCompleto} (${patient.pacienteId}) entrou na fila.`);
 
     this.patientSockets.set(patient.pacienteId, client.id);
     console.log(`Paciente ${patient.pacienteId} registrado com socket ID: ${client.id}`);
@@ -77,7 +75,7 @@ export class ChatGateway {
 
     const newPatient: PatientQueue = {
       ...patient,
-      peso: patient.pesoTotal
+      peso: patient.pesoTotal,
     };
 
     this.queue.push(newPatient);
@@ -93,7 +91,7 @@ export class ChatGateway {
 
     this.queue = this.queue.filter(p => p.pacienteId !== data.pacienteId);
     this.patientSockets.delete(data.pacienteId);
-    
+
     console.log(`📌 [Fila Atualizada]`, JSON.stringify(this.queue, null, 2));
     this.server.emit('updateQueue', this.queue);
   }
@@ -148,8 +146,6 @@ export class ChatGateway {
       console.log(`❌ [Erro] Mensagem inválida recebida:`, mensagem);
       return client.emit('error', { mensagem: 'Dados da mensagem são inválidos.' });
     }
-
-    await this.chatService.salvarMensagem(mensagem.sala, mensagem.remetenteId, mensagem.mensagem);
 
     // Alterado para emitir o evento 'message' em vez de 'receiveMessage'
     this.server.to(mensagem.sala).emit('message', {

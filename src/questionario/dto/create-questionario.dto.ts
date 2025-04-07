@@ -1,19 +1,20 @@
-import { IsString, IsNotEmpty, IsInt, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt, IsArray, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Alternativa } from '@prisma/client';
+import { Type } from 'class-transformer';
+import { CreateAlternativaDto } from './create-alternativa.dto';
 
 export class CreateQuestionarioDto {
-    @ApiProperty({ 
+    @ApiProperty({
         description: 'Pergunta do questionário',
         example: "Qual seu nível de dor?"
-     })
-     @IsString()
-     @IsNotEmpty()
+    })
+    @IsString()
+    @IsNotEmpty()
     pergunta: string;
 
     @ApiProperty({
         description: "Peso da pergunta",
-        example: 10
+        example: 50
     })
     @IsInt()
     @IsNotEmpty()
@@ -21,17 +22,18 @@ export class CreateQuestionarioDto {
 
     @ApiProperty({
         description: "Observação da pergunta",
-        example: "(Pergunta eleminatória)"
+        example: "Perguntas para triagem"
     })
     @IsString()
     @IsNotEmpty()
-    observacao: string
+    observacao: string;
 
     @ApiProperty({
-        description: "Alternativas da pergunta (precisa ser um array de objetos com as propriedades alternativa e peso)",
-        example: "[{alternativa: 'Dor leve', peso: 10}, {alternativa: 'Dor moderada', peso: 20}, {alternativa: 'Dor grave', peso: 30}]"
+        description: "Lista de alternativas para a pergunta",
+        type: [CreateAlternativaDto]
     })
     @IsArray()
-    @IsNotEmpty()
-    alternativas: Alternativa[]
+    @ValidateNested({ each: true })
+    @Type(() => CreateAlternativaDto)
+    alternativas: CreateAlternativaDto[];
 }

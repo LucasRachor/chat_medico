@@ -119,7 +119,7 @@ export class MedicosService {
         role: 'medico'
       },
       select: {
-        nome_completo: true,
+        nomeCompleto: true,
         email: true,
         username: true,
         CRM: true
@@ -133,7 +133,7 @@ export class MedicosService {
         role: 'enfermeiro'
       },
       select: {
-        nome_completo: true,
+        nomeCompleto: true,
         email: true,
         username: true,
         coren: true

@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, SetMetadata } from '@nestjs/common';
 import { QuestionarioService } from './questionario.service';
 import { CreateQuestionarioDto } from './dto/create-questionario.dto';
-import { UpdateQuestionarioDto } from './dto/update-questionario.dto';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @Controller('questionario')

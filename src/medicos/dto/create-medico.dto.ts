@@ -5,7 +5,7 @@ import { IsString } from "class-validator"
 export class CreateMedicoDto {
 
     @IsString()
-    @ApiProperty({example: "lukinhas223"})
+    @ApiProperty({example: "testemedico"})
     username: string
 
     @IsString()
@@ -14,7 +14,7 @@ export class CreateMedicoDto {
 
     @IsString()
     @ApiProperty({example: "Lucas Silva Rachor"})
-    nome_completo: string
+    nomeCompleto: string
 
     @IsString()
     @ApiProperty({example: "CRM/AM 123456"})

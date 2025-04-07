@@ -11,36 +11,36 @@ datasource db {
 }
 
 model EquipeMedica {
-  id            String         @id @default(cuid())
-  criadoEm      DateTime       @default(now())
-  username      String         @unique
-  password      String
-  nome_completo String
-  CRM           String?        @unique
-  coren         String?        @unique
-  email         String         @unique
-  role          Role
-  questionario  Questionario[]
+  id           String         @id @default(cuid())
+  criadoEm     DateTime       @default(now())
+  username     String         @unique
+  password     String
+  nomeCompleto String
+  CRM          String?        @unique
+  coren        String?        @unique
+  email        String         @unique
+  role         Role
+  questionario Questionario[]
 
   @@map("equipe_medica")
 }
 
 model Paciente {
-  id                String        @id @default(cuid())
-  criadoEm          DateTime      @default(now())
-  cpf               String        @unique
-  username          String        @unique
-  password          String
-  nome_completo     String
-  telefone          String        @unique
-  email             String        @unique
-  genero            String
-  grau_de_instrucao String
-  data_nascimento   DateTime
-  idade             Int
-  role              Role          @default(paciente)
-  endereco          Endereco[]
-  atendimento       Atendimento[]
+  id              String        @id @default(cuid())
+  criadoEm        DateTime      @default(now())
+  cpf             String        @unique
+  username        String        @unique
+  password        String
+  nomeCompleto    String
+  telefone        String        @unique
+  email           String        @unique
+  genero          String
+  grauDeInstrucao String
+  dataNascimento  DateTime
+  idade           Int
+  role            Role          @default(paciente)
+  endereco        Endereco[]
+  atendimento     Atendimento[]
 
   @@map("pacientes")
 }
@@ -96,14 +96,16 @@ model ChatMessage {
 
 model Atendimento {
   id              String       @id @default(cuid())
-  dataAtendimento DateTime     @default(now())
-  tipoAtendimento String
-  paciente        Paciente     @relation(fields: [pacienteId], references: [id])
+  dataAtendimento DateTime     @default(now()) // data do atendimento
+  tipoAtendimento String // tipo do antendimento: com o médico ou com IA
+  paciente        Paciente     @relation(fields: [pacienteId], references: [id]) // o paciente atendido
   pacienteId      String
-  Alternativa     Alternativa  @relation(fields: [alternativaId], references: [id])
+  Alternativa     Alternativa  @relation(fields: [alternativaId], references: [id]) // a resposta do questionario
   alternativaId   String
-  questionario    Questionario @relation(fields: [questionarioId], references: [id])
+  questionario    Questionario @relation(fields: [questionarioId], references: [id]) // a pergunta respondida
   questionarioId  String
+  temperatura     String
+  pressaoArterial String
 
   @@map("atendimentos")
 }

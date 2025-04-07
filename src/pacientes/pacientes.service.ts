@@ -17,8 +17,8 @@ export class PacientesService {
     return await this.prisma.paciente.findUnique({
       where: { id: pacienteId },
       select: {
-        nome_completo: true,
-        data_nascimento: true,
+        nomeCompleto: true,
+        dataNascimento: true,
         idade: true,
         genero: true,
       }
@@ -40,11 +40,11 @@ export class PacientesService {
   async getPaciente() {
     return await this.prisma.paciente.findMany({
       select: {
-        nome_completo: true,
+        nomeCompleto: true,
         cpf: true,
         email: true,
-        data_nascimento: true,
-        grau_de_instrucao: true,
+        dataNascimento: true,
+        grauDeInstrucao: true,
         username: true,
         idade: true,
         genero: true,

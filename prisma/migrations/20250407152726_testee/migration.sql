@@ -4,7 +4,7 @@ CREATE TABLE "equipe_medica" (
     "criadoEm" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "nome_completo" TEXT NOT NULL,
+    "nomeCompleto" TEXT NOT NULL,
     "CRM" TEXT,
     "coren" TEXT,
     "email" TEXT NOT NULL,
@@ -18,12 +18,12 @@ CREATE TABLE "pacientes" (
     "cpf" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "nome_completo" TEXT NOT NULL,
+    "nomeCompleto" TEXT NOT NULL,
     "telefone" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "genero" TEXT NOT NULL,
-    "grau_de_instrucao" TEXT NOT NULL,
-    "data_nascimento" DATETIME NOT NULL,
+    "grauDeInstrucao" TEXT NOT NULL,
+    "dataNascimento" DATETIME NOT NULL,
     "idade" INTEGER NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'paciente'
 );
@@ -60,6 +60,30 @@ CREATE TABLE "alternativas" (
     CONSTRAINT "alternativas_questionarioId_fkey" FOREIGN KEY ("questionarioId") REFERENCES "questionarios" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "chat_messages" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "sala" TEXT NOT NULL,
+    "remetenteId" TEXT NOT NULL,
+    "mensagem" TEXT NOT NULL,
+    "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "atendimentos" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "dataAtendimento" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "tipoAtendimento" TEXT NOT NULL,
+    "pacienteId" TEXT NOT NULL,
+    "alternativaId" TEXT NOT NULL,
+    "questionarioId" TEXT NOT NULL,
+    "temperatura" TEXT NOT NULL,
+    "pressaoArterial" TEXT NOT NULL,
+    CONSTRAINT "atendimentos_pacienteId_fkey" FOREIGN KEY ("pacienteId") REFERENCES "pacientes" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "atendimentos_alternativaId_fkey" FOREIGN KEY ("alternativaId") REFERENCES "alternativas" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "atendimentos_questionarioId_fkey" FOREIGN KEY ("questionarioId") REFERENCES "questionarios" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "equipe_medica_username_key" ON "equipe_medica"("username");
 
@@ -86,3 +110,6 @@ CREATE UNIQUE INDEX "pacientes_email_key" ON "pacientes"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "enderecos_pacienteId_key" ON "enderecos"("pacienteId");
+
+-- CreateIndex
+CREATE INDEX "chat_messages_sala_idx" ON "chat_messages"("sala");

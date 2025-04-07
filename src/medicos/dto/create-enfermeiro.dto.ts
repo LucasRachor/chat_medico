@@ -5,7 +5,7 @@ export class CreateEnfermeiroDto {
 
     @ApiProperty({
         description: 'o nome de usuário do enfermeiro',
-        example: 'lilcas123'
+        example: 'testeEnfermeiro'
     })
     @IsNotEmpty()
     @IsString()
@@ -21,11 +21,11 @@ export class CreateEnfermeiroDto {
 
     @ApiProperty({
         description: 'o nome completo do enfermeiro',
-        example: 'Lilcas Silva Oliveira'
+        example: 'Teste Silva Oliveira'
     })
     @IsNotEmpty()
     @IsString()
-    nome_completo: string;
+    nomeCompleto: string;
 
     @ApiProperty({
         description: 'o coren do enfermeiro',
