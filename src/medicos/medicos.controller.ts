@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, SetMetada
 import { MedicosService } from './medicos.service';
 import { CreateMedicoDto } from './dto/create-medico.dto';
 import { UpdateMedicoDto } from './dto/update-medico.dto';
-import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 import { RolesGuard } from 'src/auth/guards/Roles.guard';
 import { CreateEnfermeiroDto } from './dto/create-enfermeiro.dto';
 
@@ -10,39 +9,43 @@ import { CreateEnfermeiroDto } from './dto/create-enfermeiro.dto';
 export class MedicosController {
   constructor(private readonly medicosService: MedicosService) { }
 
-  @IsPublic()
+  @UseGuards(RolesGuard)
+  @SetMetadata('role', 'admin')
   @Get('medicos')
   getMedicos() {
     return this.medicosService.getMedicos();
   }
 
-  @IsPublic()
+  @UseGuards(RolesGuard)
+  @SetMetadata('role', 'admin')
   @Get('enfermeiros')
   getEnfermeiros() {
     return this.medicosService.getEnfermeiros();
   }
 
-  @IsPublic()
+  @UseGuards(RolesGuard)
+  @SetMetadata('role', 'admin')
   @Post('medico')
   createMedico(@Body() createMedicoDto: CreateMedicoDto) {
     return this.medicosService.createMedico(createMedicoDto);
   }
 
-  @IsPublic()
+  @UseGuards(RolesGuard)
+  @SetMetadata('role', 'admin')
   @Post('enfermeiro')
   createEnfermeiro(@Body() createEnfermeiroDto: CreateEnfermeiroDto) {
     return this.medicosService.createEnfermeiro(createEnfermeiroDto);
   }
 
   @UseGuards(RolesGuard)
-  @SetMetadata('role', 'medico')
+  @SetMetadata('role', 'admin')
   @Patch(':id')
   updateMedico(@Param('id') medicoId: string, @Body() updateMedicoDto: UpdateMedicoDto) {
     return this.medicosService.update(medicoId, updateMedicoDto);
   }
 
   @UseGuards(RolesGuard)
-  @SetMetadata('role', 'medico')
+  @SetMetadata('role', 'admin')
   @Delete(':id')
   removeMedico(@Param('id') medicoId: string) {
     return this.medicosService.removerMedico(medicoId);
