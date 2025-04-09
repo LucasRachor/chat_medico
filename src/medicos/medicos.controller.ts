@@ -4,6 +4,7 @@ import { CreateMedicoDto } from './dto/create-medico.dto';
 import { UpdateMedicoDto } from './dto/update-medico.dto';
 import { RolesGuard } from 'src/auth/guards/Roles.guard';
 import { CreateEnfermeiroDto } from './dto/create-enfermeiro.dto';
+import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 
 @Controller('equipe-medica')
 export class MedicosController {

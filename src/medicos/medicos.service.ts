@@ -116,14 +116,19 @@ export class MedicosService {
   async getMedicos() {
     return await this.prisma.equipeMedica.findMany({
       where: {
-        role: 'medico'
+        role: {
+          in: ["medico", "enfermeiro"]
+        }
       },
       select: {
+        id: true,
         nomeCompleto: true,
         email: true,
         username: true,
-        CRM: true
-      }
+        CRM: true,
+        coren: true,
+        role: true,
+      },
     });
   }
 
