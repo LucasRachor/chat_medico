@@ -13,6 +13,29 @@ export class MedicosService {
     private readonly userService: UserService
   ) { }
 
+  async initializeAdmin() {
+    try {
+      const adminExists = await this.userService.findUserByUsername('admin@emai');
+
+      if (!adminExists) {
+        await this.prisma.equipeMedica.create({
+          data: {
+            username: 'admin@emai',
+            password: await bcrypt.hash('91KXtvojS45ejSgbV1S5', 10),
+            role: 'admin',
+            nomeCompleto: 'Administrador',
+            email: 'admin@emai',
+            CRM: 'Não tem',
+            coren: 'Não tem',
+          }
+        });
+        console.log('Usuário admin criado com sucesso!');
+      }
+    } catch (error) {
+      console.error('Erro ao inicializar usuário admin:', error);
+    }
+  }
+
   async findByCrm(crm: string) {
     return await this.prisma.equipeMedica.findUnique({
       where: { CRM: crm }

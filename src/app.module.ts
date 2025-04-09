@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { PacientesModule } from './pacientes/pacientes.module';
 import { MedicosModule } from './medicos/medicos.module';
 import { JwtAuthGuard } from './auth/guards/JwtAuth.guard';
@@ -9,9 +9,10 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaClient } from '@prisma/client';
 import { QuestionarioModule } from './questionario/questionario.module';
 import { ChatModule } from './chat/chat.module';
+import { MedicosService } from './medicos/medicos.service';
 
 @Module({
-  imports: [PacientesModule, MedicosModule, UserModule, AuthModule, QuestionarioModule, ChatModule, UserModule],
+  imports: [PacientesModule, MedicosModule, UserModule, AuthModule, QuestionarioModule, ChatModule],
   controllers: [],
   providers: [{
     provide: APP_GUARD,
@@ -19,4 +20,10 @@ import { ChatModule } from './chat/chat.module';
   }, PrismaClient, JwtService],
 })
 
-export class AppModule { }
+export class AppModule implements OnModuleInit {
+  constructor(private readonly medicosService: MedicosService) { }
+
+  async onModuleInit() {
+    await this.medicosService.initializeAdmin();
+  }
+}
