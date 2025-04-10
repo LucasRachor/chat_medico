@@ -18,7 +18,7 @@ interface PatientQueue {
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONT_END_URL,
+    origin: "*" //process.env.FRONT_END_URL,
   }
 })
 export class ChatGateway {

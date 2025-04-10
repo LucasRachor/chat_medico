@@ -1,6 +1,5 @@
 FROM node:20.12.1
 
-ARG NODE_ENV
 ARG PORT
 
 WORKDIR /usr/app
