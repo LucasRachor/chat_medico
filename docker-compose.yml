@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  atendimento-ia:
+    container_name: atendimento-ia
+    build:
+      context: .
+      args:
+        PORT: ${PORT}
+    restart: always
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+    env_file: .env
+    ports:
+      - ${PORT}:${PORT}
