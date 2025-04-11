@@ -5,12 +5,16 @@ services:
     container_name: atendimento-ia
     build:
       context: .
+      dockerfile: Dockerfile
       args:
         PORT: ${PORT}
     restart: always
     volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/etc/timezone:/etc/timezone:ro"
-    env_file: .env
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    env_file:
+      - .env
     ports:
-      - ${PORT}:${PORT}
+      - "${PORT}:${PORT}"
+    environment:
+      - NODE_ENV=production

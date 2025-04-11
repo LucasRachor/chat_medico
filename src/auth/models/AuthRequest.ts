@@ -1,6 +1,5 @@
 import { Request } from "express";
 
-// Definir um tipo genérico para os usuários
 type AuthenticatedUser = {
     id: string;
     username: string;
