@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -67,18 +67,16 @@ model Questionario {
   equipeMedica   EquipeMedica  @relation(references: [id], fields: [equipeMedicaId], onDelete: Cascade)
   equipeMedicaId String
   alternativas   Alternativa[]
-  atendimento    Atendimento[]
 
   @@map("questionarios")
 }
 
 model Alternativa {
-  id             String        @id @default(cuid())
+  id             String       @id @default(cuid())
   alternativa    String
   peso           Int
-  questionario   Questionario  @relation(fields: [questionarioId], references: [id], onDelete: Cascade)
+  questionario   Questionario @relation(fields: [questionarioId], references: [id], onDelete: Cascade)
   questionarioId String
-  atendimento    Atendimento[]
 
   @@map("alternativas")
 }
@@ -95,19 +93,26 @@ model ChatMessage {
 }
 
 model Atendimento {
-  id              String       @id @default(cuid())
-  dataAtendimento DateTime     @default(now()) // data do atendimento
-  tipoAtendimento String // tipo do antendimento: com o médico ou com IA
-  paciente        Paciente     @relation(fields: [pacienteId], references: [id]) // o paciente atendido
+  id              String      @id @default(cuid())
+  dataAtendimento DateTime    @default(now())
+  tipoAtendimento String
+  paciente        Paciente    @relation(fields: [pacienteId], references: [id])
   pacienteId      String
-  Alternativa     Alternativa  @relation(fields: [alternativaId], references: [id]) // a resposta do questionario
-  alternativaId   String
-  questionario    Questionario @relation(fields: [questionarioId], references: [id]) // a pergunta respondida
-  questionarioId  String
   temperatura     String
   pressaoArterial String
+  respostas       Resposta[]
 
   @@map("atendimentos")
+}
+
+model Resposta {
+  id            String      @id @default(uuid())
+  atendimentos  Atendimento @relation(fields: [atendimentoId], references: [id])
+  atendimentoId String
+  pergunta      String
+  resposta      String
+
+  @@map("respostas")
 }
 
 enum Role {

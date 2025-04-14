@@ -10,9 +10,10 @@ import { PrismaClient } from '@prisma/client';
 import { QuestionarioModule } from './questionario/questionario.module';
 import { ChatModule } from './chat/chat.module';
 import { MedicosService } from './medicos/medicos.service';
+import { AtendimentosModule } from './atendimentos/atendimentos.module';
 
 @Module({
-  imports: [PacientesModule, MedicosModule, UserModule, AuthModule, QuestionarioModule, ChatModule],
+  imports: [PacientesModule, MedicosModule, UserModule, AuthModule, QuestionarioModule, ChatModule, AtendimentosModule],
   controllers: [],
   providers: [{
     provide: APP_GUARD,
