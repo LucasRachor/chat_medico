@@ -79,7 +79,7 @@ export class ChatGateway {
     };
 
     this.queue.push(newPatient);
-    this.server.emit('updateQueue', this.queue);
+    client.broadcast.emit('updateQueue', this.queue);
   }
 
   @SubscribeMessage('leaveQueue')
@@ -93,7 +93,7 @@ export class ChatGateway {
     this.patientSockets.delete(data.pacienteId);
 
     console.log(`📌 [Fila Atualizada]`, JSON.stringify(this.queue, null, 2));
-    this.server.emit('updateQueue', this.queue);
+    client.broadcast.emit('updateQueue', this.queue);
   }
 
   // medico aceita um paciente
@@ -104,16 +104,16 @@ export class ChatGateway {
   ) {
     console.log(`\n🟠 [Médico] ${data.medicoId} aceitou o paciente ${data.pacienteId}`);
 
-    const patient = this.queue.find(p => p.pacienteId === data.pacienteId);
-    if (!patient) {
+    const patientIndex = this.queue.findIndex(p => p.pacienteId === data.pacienteId);
+    if (patientIndex === -1) {
       console.log(`❌ [Erro] Paciente ${data.pacienteId} não encontrado na fila.`);
       return client.emit('error', { message: 'Paciente não encontrado na fila.' });
     }
 
-    this.queue = this.queue.filter(p => p.pacienteId !== data.pacienteId);
-    console.log(`📌 [Fila Atualizada]`, JSON.stringify(this.queue, null, 2));
+    const [patient] = this.queue.splice(patientIndex, 1); // Remove da fila
 
-    this.server.emit('updateQueue', this.queue);
+    // Atualiza fila para todos, exceto o médico que aceitou
+    client.broadcast.emit('updateQueue', this.queue);
 
     const sala = `chat-${data.pacienteId}-${data.medicoId}`;
     this.activeChats.set(data.pacienteId, data.medicoId);
@@ -126,13 +126,13 @@ export class ChatGateway {
       const patientSocket = this.server.sockets.sockets.get(patientSocketId);
       if (patientSocket) {
         patientSocket.join(sala);
-        // Emite o evento acceptPatient para o paciente
         patientSocket.emit('acceptPatient', { medicoId: data.medicoId });
       }
     } else {
       console.log(`❌ [Erro] Não foi possível encontrar o socket do paciente ${data.pacienteId}`);
     }
   }
+
 
   // enviar mensagem no chat
   @SubscribeMessage('sendMessage')
