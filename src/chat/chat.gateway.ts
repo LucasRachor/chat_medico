@@ -109,9 +109,6 @@ export class ChatGateway {
       console.log(`❌ [Erro] Paciente ${data.pacienteId} não encontrado na fila.`);
       return client.emit('error', { message: 'Paciente não encontrado na fila.' });
     }
-
-    const [patient] = this.queue.splice(patientIndex, 1); // Remove da fila
-
     // Atualiza fila para todos, exceto o médico que aceitou
     client.broadcast.emit('updateQueue', this.queue);
 
@@ -127,6 +124,9 @@ export class ChatGateway {
       if (patientSocket) {
         patientSocket.join(sala);
         patientSocket.emit('acceptPatient', { medicoId: data.medicoId });
+
+        this.queue = this.queue.filter(p => p.pacienteId !== data.pacienteId);
+        this.patientSockets.delete(data.pacienteId);
       }
     } else {
       console.log(`❌ [Erro] Não foi possível encontrar o socket do paciente ${data.pacienteId}`);
