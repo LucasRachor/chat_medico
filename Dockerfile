@@ -1,4 +1,4 @@
-#build
+# Build
 FROM node:20.12.1 AS builder
 
 WORKDIR /usr/app
@@ -14,7 +14,7 @@ COPY . ./
 RUN yarn prisma generate
 RUN yarn build
 
-#production
+# Production
 FROM node:20.12.1 AS production
 
 ARG PORT
@@ -29,6 +29,8 @@ RUN yarn install --frozen-lockfile --production
 COPY --from=builder /usr/app/dist ./dist
 COPY --from=builder /usr/app/prisma ./prisma
 COPY --from=builder /usr/app/.env ./
+
+RUN yarn prisma generate
 
 EXPOSE ${PORT}
 

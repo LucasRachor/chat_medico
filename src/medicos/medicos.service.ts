@@ -202,15 +202,30 @@ export class MedicosService {
         );
       }
 
-      await this.prisma.equipeMedica.update({
-        where: { id: medicoId },
-        data: { ...updateMedicoDto },
-      });
+      if (!updateMedicoDto.password) {
+        await this.prisma.equipeMedica.update({
+          where: { id: medicoId },
+          data: {
+            ...updateMedicoDto,
+          },
+        });
+      }
+
+      if (updateMedicoDto.password) {
+        await this.prisma.equipeMedica.update({
+          where: { id: medicoId },
+          data: {
+            ...updateMedicoDto,
+            password: await bcrypt.hash(updateMedicoDto.password, 10)
+          },
+        });
+      }
 
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
+      throw error;
     }
     return undefined;
 
@@ -238,6 +253,7 @@ export class MedicosService {
       if (error instanceof HttpException) {
         throw error;
       }
+      throw error;
     }
     return undefined;
   }

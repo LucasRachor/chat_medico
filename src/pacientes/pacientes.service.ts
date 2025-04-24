@@ -40,6 +40,7 @@ export class PacientesService {
   async getPaciente() {
     return await this.prisma.paciente.findMany({
       select: {
+        id: true,
         nomeCompleto: true,
         cpf: true,
         email: true,
@@ -169,10 +170,24 @@ export class PacientesService {
       );
     }
 
-    await this.prisma.paciente.update({
-      where: { id: pacienteId },
-      data: { ...updatePacienteDto },
-    });
+    if (!updatePacienteDto.password) {
+      await this.prisma.paciente.update({
+        where: { id: pacienteId },
+        data: {
+          ...updatePacienteDto,
+        },
+      });
+    }
+
+    if (updatePacienteDto.password) {
+      await this.prisma.paciente.update({
+        where: { id: pacienteId },
+        data: {
+          ...updatePacienteDto,
+          password: await bcrypt.hash(updatePacienteDto.password, 10),
+        },
+      });
+    }
 
     return undefined;
 
@@ -199,6 +214,7 @@ export class PacientesService {
       if (error instanceof HttpException) {
         throw error;
       }
+      throw error;
     }
     return undefined;
 

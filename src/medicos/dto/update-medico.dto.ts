@@ -10,4 +10,8 @@ export class UpdateMedicoDto {
     @ApiProperty()
     email: string
 
+    @IsString()
+    @ApiProperty()
+    password: string
+
 }

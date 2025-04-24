@@ -21,4 +21,9 @@ export class UpdatePacienteDto {
     @ApiPropertyOptional()
     @IsString()
     username?: string
+
+    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsString()
+    password?: string
 }

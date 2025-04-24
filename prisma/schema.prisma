@@ -96,7 +96,7 @@ model Atendimento {
   id              String      @id @default(cuid())
   dataAtendimento DateTime    @default(now())
   tipoAtendimento String
-  paciente        Paciente    @relation(fields: [pacienteId], references: [id])
+  paciente        Paciente    @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
   pacienteId      String
   temperatura     String
   pressaoArterial String
@@ -107,7 +107,7 @@ model Atendimento {
 
 model Resposta {
   id            String      @id @default(uuid())
-  atendimentos  Atendimento @relation(fields: [atendimentoId], references: [id])
+  atendimentos  Atendimento @relation(fields: [atendimentoId], references: [id], onDelete: Cascade)
   atendimentoId String
   pergunta      String
   resposta      String

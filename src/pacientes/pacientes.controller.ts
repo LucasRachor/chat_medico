@@ -23,14 +23,21 @@ export class PacientesController {
   }
 
   @UseGuards(RolesGuard)
-  @SetMetadata('role', 'paciente')
+  @SetMetadata('role', 'admin')
+  @Get()
+  async getPacientes() {
+    return await this.pacientesService.getPaciente()
+  }
+
+  @UseGuards(RolesGuard)
+  @SetMetadata('role', 'admin')
   @Patch(':id')
   async updatePaciente(@Param('id') pacienteId: string, @Body() updatePacienteDto: UpdatePacienteDto) {
     return await this.pacientesService.updatePaciente(pacienteId, updatePacienteDto)
   }
 
   @UseGuards(RolesGuard)
-  @SetMetadata('role', 'paciente')
+  @SetMetadata('role', 'admin')
   @Delete(':id')
   async deletePaciente(@Param('id') pacienteId: string) {
     return await this.pacientesService.deletePaciente(pacienteId)
