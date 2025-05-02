@@ -11,9 +11,10 @@ import { QuestionarioModule } from './questionario/questionario.module';
 import { ChatModule } from './chat/chat.module';
 import { MedicosService } from './medicos/medicos.service';
 import { AtendimentosModule } from './atendimentos/atendimentos.module';
+import { IaModule } from './ia/ia.module';
 
 @Module({
-  imports: [PacientesModule, MedicosModule, UserModule, AuthModule, QuestionarioModule, ChatModule, AtendimentosModule],
+  imports: [PacientesModule, MedicosModule, UserModule, AuthModule, QuestionarioModule, ChatModule, AtendimentosModule, IaModule],
   controllers: [],
   providers: [{
     provide: APP_GUARD,
