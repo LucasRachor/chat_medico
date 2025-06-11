@@ -78,7 +78,7 @@ CREATE TABLE "atendimentos" (
     "pacienteId" TEXT NOT NULL,
     "temperatura" TEXT NOT NULL,
     "pressaoArterial" TEXT NOT NULL,
-
+    "classificacaoRisco" TEXT NOT NULL,
     CONSTRAINT "atendimentos_pkey" PRIMARY KEY ("id")
 );
 

@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class AtendimentosService {
+ 
   constructor(private readonly prisma: PrismaClient) { }
 
   async create(createAtendimentoDto: CreateAtendimentoDto) {
@@ -15,6 +16,7 @@ export class AtendimentosService {
           pacienteId: createAtendimentoDto.pacienteId,
           temperatura: createAtendimentoDto.temperatura,
           pressaoArterial: createAtendimentoDto.pressaoArterial,
+          classificacaoRisco: createAtendimentoDto.classificacaoRisco,
         },
       });
 
@@ -70,4 +72,6 @@ export class AtendimentosService {
   remove(id: number) {
     return `This action removes a #${id} atendimento`;
   }
+
+  
 }

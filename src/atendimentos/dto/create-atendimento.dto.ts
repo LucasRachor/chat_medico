@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsNotEmpty, IsString } from "class-validator";
 import { Resposta } from "@prisma/client"
 
@@ -17,6 +18,10 @@ export class CreateAtendimentoDto {
     @IsString()
     @IsNotEmpty()
     pressaoArterial: string
+
+    @IsString()
+    @IsNotEmpty()
+    classificacaoRisco: string
 
     @IsArray()
     @IsNotEmpty()

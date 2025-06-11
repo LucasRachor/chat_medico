@@ -89,8 +89,8 @@ model Atendimento {
   pacienteId      String
   temperatura     String
   pressaoArterial String
+  classificacaoRisco String
   respostas       Resposta[]
-
   @@map("atendimentos")
 }
 
