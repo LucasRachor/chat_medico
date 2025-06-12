@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class AtendimentosService {
+
   constructor(private readonly prisma: PrismaClient) { }
 
   async create(createAtendimentoDto: CreateAtendimentoDto) {
@@ -15,6 +16,7 @@ export class AtendimentosService {
           pacienteId: createAtendimentoDto.pacienteId,
           temperatura: createAtendimentoDto.temperatura,
           pressaoArterial: createAtendimentoDto.pressaoArterial,
+          classificacaoRisco: createAtendimentoDto.classificacaoRisco,
         },
       });
 
@@ -39,8 +41,13 @@ export class AtendimentosService {
     return undefined;
   }
 
-  async findAll(pacienteId: string) {
-    return await this.prisma.atendimento.findMany({
+  async findAllWhereUserId(pacienteId: string) {
+
+    const atendimentos = await this.prisma.atendimento.findMany({
+      orderBy: {
+        dataAtendimento: 'desc'
+
+      },
       where: {
         pacienteId: pacienteId
       },
@@ -49,6 +56,16 @@ export class AtendimentosService {
         pressaoArterial: true,
         temperatura: true,
         tipoAtendimento: true,
+        classificacaoRisco: true,
+        paciente: {
+          select: {
+            endereco: {
+              select: {
+                cidade: true,
+              }
+            }
+          }
+        },
         respostas: {
           select: {
             pergunta: true,
@@ -57,17 +74,69 @@ export class AtendimentosService {
         }
       },
     });
+
+    const atendimentosFormatados = atendimentos.map(atend => {
+      return {
+        dataAtendimento: atend.dataAtendimento,
+        pressaoArterial: atend.pressaoArterial,
+        temperatura: atend.temperatura,
+        tipoAtendimento: atend.tipoAtendimento,
+        classificacaoRisco: atend.classificacaoRisco,
+        cidade: atend.paciente.endereco[0].cidade,
+        respostas: atend.respostas
+      }
+    })
+
+    return atendimentosFormatados;
+
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} atendimento`;
+  async findAll() {
+    const atendimentos = await this.prisma.atendimento.findMany({
+      orderBy: {
+        dataAtendimento: 'desc'
+      },
+      select: {
+        dataAtendimento: true,
+        pressaoArterial: true,
+        temperatura: true,
+        tipoAtendimento: true,
+        classificacaoRisco: true,
+        paciente: {
+          select: {
+            nomeCompleto: true,
+            endereco: {
+              select: {
+                cidade: true,
+              }
+            }
+          }
+        },
+        respostas: {
+          select: {
+            pergunta: true,
+            resposta: true
+          }
+        }
+      },
+    })
+
+    const atendimentosFormatados = atendimentos.map(atend => {
+      return {
+        dataAtendimento: atend.dataAtendimento,
+        nomePaciente: atend.paciente.nomeCompleto,
+        pressaoArterial: atend.pressaoArterial,
+        temperatura: atend.temperatura,
+        tipoAtendimento: atend.tipoAtendimento,
+        classificacaoRisco: atend.classificacaoRisco,
+        cidade: atend.paciente.endereco[0].cidade,
+        respostas: atend.respostas
+      }
+    })
+
+    return atendimentosFormatados;
+
+
   }
 
-  update(id: number, updateAtendimentoDto: UpdateAtendimentoDto) {
-    return `This action updates a #${id} atendimento`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} atendimento`;
-  }
 }

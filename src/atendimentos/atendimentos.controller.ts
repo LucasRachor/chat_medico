@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, SetMetadata } from '@nestjs/common';
 import { AtendimentosService } from './atendimentos.service';
 import { CreateAtendimentoDto } from './dto/create-atendimento.dto';
-import { UpdateAtendimentoDto } from './dto/update-atendimento.dto';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @Controller('atendimentos')
@@ -14,22 +13,14 @@ export class AtendimentosController {
   }
 
   @Get()
-  findAll(@CurrentUser('id') pacienteId: string) {
-    return this.atendimentosService.findAll(pacienteId);
+  findAllWhereUerId(@CurrentUser('id') pacienteId: string) {
+    return this.atendimentosService.findAllWhereUserId(pacienteId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.atendimentosService.findOne(+id);
+  @SetMetadata('roles', ['medico', 'enfermeiro'])
+  @Get('/all')
+  findAll() {
+    return this.atendimentosService.findAll()
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAtendimentoDto: UpdateAtendimentoDto) {
-    return this.atendimentosService.update(+id, updateAtendimentoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.atendimentosService.remove(+id);
-  }
 }

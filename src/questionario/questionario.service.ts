@@ -1,6 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateQuestionarioDto } from './dto/create-questionario.dto';
 import { PrismaClient } from '@prisma/client';
+import { UpdateQuestionarioDto } from './dto/update-questionario.dto';
 
 @Injectable()
 export class QuestionarioService {
@@ -39,12 +40,14 @@ export class QuestionarioService {
   async findAll() {
     return await this.prisma.questionario.findMany({
       select: {
+        id: true,
         criadoEm: true,
         pergunta: true,
         observacao: true,
         peso: true,
         alternativas: {
           select: {
+            id: true,
             alternativa: true,
             peso: true
           }
@@ -53,53 +56,61 @@ export class QuestionarioService {
     });
   }
 
-  async findQuestionsByUser(userId: string) {
-
-    if (!userId) {
-      throw new HttpException("Usuário não encontrado", HttpStatus.NOT_FOUND);
-    }
-
-    return await this.prisma.questionario.findMany({
-      where: {
-        equipeMedica: {
-          id: userId
-        }
-
-      },
-      select: {
-        criadoEm: true,
-        pergunta: true,
-        observacao: true,
-        peso: true,
-        alternativas: {
-          select: {
-            alternativa: true,
-            peso: true
-          }
-        }
-      }
-    });
-  }
-
-  async removeQuestionario(questionarioId: string, userId: string) {
+  async removeQuestionario(questionarioId: string) {
     const questionarioExiste = await this.prisma.questionario.findUnique({
       where: {
         id: questionarioId
       }
     })
 
-    if (questionarioExiste?.equipeMedicaId !== userId) {
-      throw new HttpException("Você não tem permissão para deletar este questionário", HttpStatus.FORBIDDEN);
-    }
-
     if (!questionarioExiste) {
       throw new HttpException("Questionário não encontrado", HttpStatus.NOT_FOUND);
     }
+
     await this.prisma.questionario.delete({
       where: {
         id: questionarioId
       }
     });
+
     return undefined;
   }
+
+  async editQuestionario(questionarioId: string, updateQuestionarioDto: UpdateQuestionarioDto) {
+    const questionarioExiste = await this.prisma.questionario.findUnique({
+      where: {
+        id: questionarioId
+      }
+    })
+
+    if (!questionarioExiste) {
+      throw new HttpException("Questionário não encontrado", HttpStatus.NOT_FOUND);
+    }
+
+    await this.prisma.alternativa.deleteMany({
+      where: {
+        questionarioId: questionarioId
+      }
+    })
+
+    await this.prisma.questionario.update({
+      where: {
+        id: questionarioId
+      },
+      data: {
+        ...updateQuestionarioDto,
+        alternativas: {
+          create: updateQuestionarioDto.alternativas?.map(altern => {
+            return {
+              alternativa: altern.alternativa,
+              peso: Number(altern.peso)
+            }
+          })
+        }
+      }
+    });
+
+  }
+
 }
+

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, SetMetadata } from '@nestjs/common';
 import { IaService } from './ia.service';
 
 
@@ -6,11 +6,12 @@ import { IaService } from './ia.service';
 export class IaController {
   constructor(private readonly iaService: IaService) { }
 
+  @SetMetadata('role', ['paciente'])
   @Post('ask')
   async askQuestion(@Body() body: { question: string }) {
     try {
-      const response = await this.iaService.generateResponse(body.question);
-      return response;
+
+      return await this.iaService.generateResponse(body.question);
     } catch (error) {
       return {
         error: true,

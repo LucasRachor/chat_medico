@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete, SetMetadata } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, SetMetadata, Patch } from '@nestjs/common';
 import { QuestionarioService } from './questionario.service';
 import { CreateQuestionarioDto } from './dto/create-questionario.dto';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { UpdateQuestionarioDto } from './dto/update-questionario.dto';
 
 @Controller('questionario')
 export class QuestionarioController {
@@ -18,14 +19,15 @@ export class QuestionarioController {
     return this.questionarioService.findAll();
   }
 
-  @Get('medicos')
-  findQuestiosByUser(@CurrentUser('id') userId: string) {
-    return this.questionarioService.findQuestionsByUser(userId);
-  }
-
   @SetMetadata('roles', ['medico', 'enfermeiro'])
   @Delete(':id')
-  removeQuestionario(@CurrentUser('id') userId: string, @Param('id') questionarioId: string) {
-    return this.questionarioService.removeQuestionario(questionarioId, userId);
+  removeQuestionario(@Param('id') questionarioId: string) {
+    return this.questionarioService.removeQuestionario(questionarioId);
+  }
+
+  @Patch(':id')
+  editQuestion(@Param('id') questionarioId: string, @Body() updateQuestionarioDto: UpdateQuestionarioDto) {
+    console.log(updateQuestionarioDto);
+    return this.questionarioService.editQuestionario(questionarioId, updateQuestionarioDto);
   }
 }
