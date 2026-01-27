@@ -5,8 +5,7 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class AtendimentosService {
-
-  constructor(private readonly prisma: PrismaClient) { }
+  constructor(private readonly prisma: PrismaClient) {}
 
   async create(createAtendimentoDto: CreateAtendimentoDto) {
     try {
@@ -20,7 +19,10 @@ export class AtendimentosService {
         },
       });
 
-      if (createAtendimentoDto.respostas && createAtendimentoDto.respostas.length > 0) {
+      if (
+        createAtendimentoDto.respostas &&
+        createAtendimentoDto.respostas.length > 0
+      ) {
         await this.prisma.resposta.createMany({
           data: createAtendimentoDto.respostas.map((data) => ({
             atendimentoId: atendimento.id,
@@ -29,27 +31,27 @@ export class AtendimentosService {
           })),
         });
       }
-
     } catch (error) {
       if (error instanceof HttpException) {
-        console.log(error)
+        console.log(error);
         throw error;
       }
-      console.log(error)
-      throw new HttpException('Erro interno do servidor', HttpStatus.INTERNAL_SERVER_ERROR)
+      console.log(error);
+      throw new HttpException(
+        'Erro interno do servidor',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     return undefined;
   }
 
   async findAllWhereUserId(pacienteId: string) {
-
     const atendimentos = await this.prisma.atendimento.findMany({
       orderBy: {
-        dataAtendimento: 'desc'
-
+        dataAtendimento: 'desc',
       },
       where: {
-        pacienteId: pacienteId
+        pacienteId: pacienteId,
       },
       select: {
         dataAtendimento: true,
@@ -62,20 +64,22 @@ export class AtendimentosService {
             endereco: {
               select: {
                 cidade: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         respostas: {
           select: {
             pergunta: true,
-            resposta: true
-          }
-        }
+            resposta: true,
+          },
+        },
       },
     });
 
-    const atendimentosFormatados = atendimentos.map(atend => {
+    if (atendimentos.length === 0) return [];
+
+    const atendimentosFormatados = atendimentos.map((atend) => {
       return {
         dataAtendimento: atend.dataAtendimento,
         pressaoArterial: atend.pressaoArterial,
@@ -83,18 +87,17 @@ export class AtendimentosService {
         tipoAtendimento: atend.tipoAtendimento,
         classificacaoRisco: atend.classificacaoRisco,
         cidade: atend.paciente.endereco[0].cidade,
-        respostas: atend.respostas
-      }
-    })
+        respostas: atend.respostas,
+      };
+    });
 
     return atendimentosFormatados;
-
   }
 
   async findAll() {
     const atendimentos = await this.prisma.atendimento.findMany({
       orderBy: {
-        dataAtendimento: 'desc'
+        dataAtendimento: 'desc',
       },
       select: {
         dataAtendimento: true,
@@ -108,20 +111,22 @@ export class AtendimentosService {
             endereco: {
               select: {
                 cidade: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         respostas: {
           select: {
             pergunta: true,
-            resposta: true
-          }
-        }
+            resposta: true,
+          },
+        },
       },
-    })
+    });
 
-    const atendimentosFormatados = atendimentos.map(atend => {
+    if (atendimentos.length === 0) return [];
+
+    const atendimentosFormatados = atendimentos.map((atend) => {
       return {
         dataAtendimento: atend.dataAtendimento,
         nomePaciente: atend.paciente.nomeCompleto,
@@ -130,13 +135,10 @@ export class AtendimentosService {
         tipoAtendimento: atend.tipoAtendimento,
         classificacaoRisco: atend.classificacaoRisco,
         cidade: atend.paciente.endereco[0].cidade,
-        respostas: atend.respostas
-      }
-    })
+        respostas: atend.respostas,
+      };
+    });
 
     return atendimentosFormatados;
-
-
   }
-
 }
