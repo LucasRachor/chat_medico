@@ -12,18 +12,32 @@ import { ChatModule } from './chat/chat.module';
 import { MedicosService } from './medicos/medicos.service';
 import { AtendimentosModule } from './atendimentos/atendimentos.module';
 import { IaModule } from './ia/ia.module';
+import { PrismaModule } from './database/prisma.module';
 
 @Module({
-  imports: [PacientesModule, MedicosModule, UserModule, AuthModule, QuestionarioModule, ChatModule, AtendimentosModule, IaModule],
+  imports: [
+    PrismaModule,
+    PacientesModule,
+    MedicosModule,
+    UserModule,
+    AuthModule,
+    QuestionarioModule,
+    ChatModule,
+    AtendimentosModule,
+    IaModule,
+  ],
   controllers: [],
-  providers: [{
-    provide: APP_GUARD,
-    useClass: JwtAuthGuard
-  }, PrismaClient, JwtService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    PrismaClient,
+    JwtService,
+  ],
 })
-
 export class AppModule implements OnModuleInit {
-  constructor(private readonly medicosService: MedicosService) { }
+  constructor(private readonly medicosService: MedicosService) {}
 
   async onModuleInit() {
     await this.medicosService.initializeAdmin();

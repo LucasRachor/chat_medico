@@ -1,5 +1,5 @@
 # Build
-FROM node:20.12.1 AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /usr/app
 
@@ -15,7 +15,7 @@ RUN yarn prisma generate
 RUN yarn build
 
 # Production
-FROM node:20.12.1 AS production
+FROM node:20-alpine AS production
 
 ARG PORT
 ENV NODE_ENV=production

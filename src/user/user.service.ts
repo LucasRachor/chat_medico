@@ -17,31 +17,24 @@ export class UserService {
 
   async findUserData(userId: string) {
     const paciente = await this.prisma.paciente.findUnique({
-      where: {
-        id: userId
-      },
-      select: {
-        nomeCompleto: true
-      }
-    })
+      where: { id: userId },
+      select: { nomeCompleto: true, role: true },
+    });
 
     if (paciente) {
-      return JSON.stringify(paciente.nomeCompleto)
+      return { nomeCompleto: paciente.nomeCompleto, role: paciente.role };
     }
 
     const medico = await this.prisma.equipeMedica.findUnique({
-      where: {
-        id: userId
-      },
-      select: {
-        nomeCompleto: true
-      }
-    })
+      where: { id: userId },
+      select: { nomeCompleto: true, role: true },
+    });
 
     if (medico) {
-      return JSON.stringify(medico.nomeCompleto)
+      return { nomeCompleto: medico.nomeCompleto, role: medico.role };
     }
 
+    return null;
   }
 
   async findEmail(email: string) {

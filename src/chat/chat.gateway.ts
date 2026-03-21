@@ -99,7 +99,12 @@ export class ChatGateway {
   // medico aceita um paciente
   @SubscribeMessage('acceptPatient')
   handleAcceptPatient(
-    @MessageBody() data: { pacienteId: string; medicoId: string },
+    @MessageBody() data: {
+      pacienteId: string;
+      medicoId: string;
+      nomeCompletoMedico?: string;
+      roleMedico?: string;
+    },
     @ConnectedSocket() client: Socket,
   ) {
     console.log(`\n🟠 [Médico] ${data.medicoId} aceitou o paciente ${data.pacienteId}`);
@@ -123,7 +128,11 @@ export class ChatGateway {
       const patientSocket = this.server.sockets.sockets.get(patientSocketId);
       if (patientSocket) {
         patientSocket.join(sala);
-        patientSocket.emit('acceptPatient', { medicoId: data.medicoId });
+        patientSocket.emit('acceptPatient', {
+          medicoId: data.medicoId,
+          nomeCompletoMedico: data.nomeCompletoMedico || '',
+          roleMedico: data.roleMedico || '',
+        });
 
         this.queue = this.queue.filter(p => p.pacienteId !== data.pacienteId);
         this.patientSockets.delete(data.pacienteId);
@@ -137,7 +146,13 @@ export class ChatGateway {
   // enviar mensagem no chat
   @SubscribeMessage('sendMessage')
   async handleMessage(
-    @MessageBody() mensagem: { sala: string; remetenteId: string; mensagem: string },
+    @MessageBody() mensagem: {
+      sala: string;
+      remetenteId: string;
+      mensagem: string;
+      nomeRemetente?: string;
+      roleRemetente?: string;
+    },
     @ConnectedSocket() client: Socket,
   ) {
     console.log(`\n✉️ [Mensagem] Sala: ${mensagem.sala}, Remetente: ${mensagem.remetenteId}, Texto: ${mensagem.mensagem}`);
@@ -147,10 +162,11 @@ export class ChatGateway {
       return client.emit('error', { mensagem: 'Dados da mensagem são inválidos.' });
     }
 
-    // Alterado para emitir o evento 'message' em vez de 'receiveMessage'
     this.server.to(mensagem.sala).emit('message', {
       remetenteId: mensagem.remetenteId,
-      mensagem: mensagem.mensagem
+      mensagem: mensagem.mensagem,
+      nomeRemetente: mensagem.nomeRemetente || '',
+      roleRemetente: mensagem.roleRemetente || '',
     });
   }
 
@@ -176,5 +192,74 @@ export class ChatGateway {
     });
 
     console.log(`✅ [Chat Finalizado] Sala ${data.sala} encerrada com sucesso.`);
+  }
+
+  // WebRTC call invitation events
+  @SubscribeMessage('webrtc-request-call')
+  handleRequestCall(
+    @MessageBody() data: { sala: string; fromName: string; fromRole: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n📹 [WebRTC] Solicitação de videochamada na sala ${data.sala} de ${data.fromName}`);
+    client.to(data.sala).emit('webrtc-request-call', {
+      fromName: data.fromName,
+      fromRole: data.fromRole,
+    });
+  }
+
+  @SubscribeMessage('webrtc-call-response')
+  handleCallResponse(
+    @MessageBody() data: { sala: string; accepted: boolean },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n📹 [WebRTC] Resposta de videochamada na sala ${data.sala}: ${data.accepted ? 'aceita' : 'recusada'}`);
+    client.to(data.sala).emit('webrtc-call-response', {
+      accepted: data.accepted,
+    });
+  }
+
+  // WebRTC signaling events
+  @SubscribeMessage('webrtc-offer')
+  handleWebRTCOffer(
+    @MessageBody() data: { sala: string; offer: any },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n📹 [WebRTC] Offer enviado na sala ${data.sala}`);
+    client.to(data.sala).emit('webrtc-offer', { offer: data.offer });
+  }
+
+  @SubscribeMessage('webrtc-answer')
+  handleWebRTCAnswer(
+    @MessageBody() data: { sala: string; answer: any },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n📹 [WebRTC] Answer enviado na sala ${data.sala}`);
+    client.to(data.sala).emit('webrtc-answer', { answer: data.answer });
+  }
+
+  @SubscribeMessage('webrtc-ice-candidate')
+  handleICECandidate(
+    @MessageBody() data: { sala: string; candidate: any },
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.to(data.sala).emit('webrtc-ice-candidate', { candidate: data.candidate });
+  }
+
+  @SubscribeMessage('webrtc-end-call')
+  handleWebRTCEndCall(
+    @MessageBody() data: { sala: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n📹 [WebRTC] Chamada encerrada na sala ${data.sala}`);
+    client.to(data.sala).emit('webrtc-end-call');
+  }
+
+  @SubscribeMessage('webrtc-media-error')
+  handleWebRTCMediaError(
+    @MessageBody() data: { sala: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log(`\n📹 [WebRTC] Erro de midia na sala ${data.sala}`);
+    client.to(data.sala).emit('webrtc-media-error');
   }
 }
